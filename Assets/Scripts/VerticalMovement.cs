@@ -5,13 +5,15 @@ public class VerticalMovement
     public RaycastHit hit;
     public bool isApplyGravity = true;
     public float yVelocity;
+    
     private VerticalMovementConfiguration _configuration;
     private Movement _movement;
+
     private float m_providedGrivity;
     private bool m_useProvidedGrivity;
     private bool m_checkGround;
+    
     public bool UpdateState { get; set; }
-
     public bool CheckGround { get; set; }
 
     public VerticalMovement(Movement movement, VerticalMovementConfiguration configuration)

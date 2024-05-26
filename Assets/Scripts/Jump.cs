@@ -45,18 +45,6 @@ public class Jump : ActionComponent
         _movement._verticalMovement.UpdateState = true;
         base.Cancel();
     }
-    
-    private void PerformJump(float jumpSpeed, float providedHSpeed)
-    {
-        base.Perform();
-        _movement.ChangePlayerState(PlayerState.JUMP);
-        _movement._verticalMovement.yVelocity = jumpSpeed;
-        _movement.isGrounded = false;
-        tick = true;
-        _movement._horizontalMovement.ProvideMaxSpeed(providedHSpeed);
-        _movement._verticalMovement.CheckGround = false;
-        _movement._verticalMovement.UpdateState = false;
-    }
 
     public override void FixedUpdate()
     {
@@ -69,6 +57,17 @@ public class Jump : ActionComponent
         {
             _movement._verticalMovement.CheckGround = true;
         }
-        
+    }
+    
+    private void PerformJump(float jumpSpeed, float providedHSpeed)
+    {
+        base.Perform();
+        _movement.ChangePlayerState(PlayerState.JUMP);
+        _movement._verticalMovement.yVelocity = jumpSpeed;
+        _movement.isGrounded = false;
+        tick = true;
+        _movement._horizontalMovement.ProvideMaxSpeed(providedHSpeed);
+        _movement._verticalMovement.CheckGround = false;
+        _movement._verticalMovement.UpdateState = false;
     }
 }

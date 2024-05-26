@@ -9,7 +9,6 @@ public abstract class ActionComponent
     public event OnActionPerform onActionPerformed;
     
     public delegate void OnActionCancel();
-
     public event OnActionCancel onActionCanceled;
     
     public virtual void Perform()

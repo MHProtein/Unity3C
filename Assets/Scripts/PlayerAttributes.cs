@@ -4,6 +4,7 @@ using UnityEngine;
 public class PlayerAttributes
 {
     private AttributesConfiguration _configuration;
+    
     public bool StaminaRechargable { set; get; }
     public float Stamina { get; private set; }
 
@@ -23,6 +24,11 @@ public class PlayerAttributes
         return Stamina;
     }
 
+    public void Update()
+    {
+        RechargeStamina();
+    }
+    
     private void RechargeStamina()
     {
         if (StaminaRechargable)
@@ -31,10 +37,4 @@ public class PlayerAttributes
                 Stamina += _configuration.staminaRechargeRate * Time.deltaTime;
         }
     }
-
-    public void Update()
-    {
-        RechargeStamina();
-    }
-    
 }

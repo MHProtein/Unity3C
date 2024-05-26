@@ -2,13 +2,14 @@
 
 public class HorizontalMovement
 {
+    private HorizontalMovementConfiguration _configuration;
     private Movement _movement;
+    
     private float m_maxSpeed;
     private float m_providedMaxSpeed;
     private float m_turnSmoothVelocity;
     private float m_inputMagnitude;
     private bool m_useProvidedMaxSpeed;
-    private HorizontalMovementConfiguration _configuration;
     
     public bool Sprintable { set; get; }
     
@@ -47,7 +48,7 @@ public class HorizontalMovement
         _movement.velocity *= m_maxSpeed;
     }
     
-    void SetMaxSpeed(Vector2 input, bool isSprint)
+    private void SetMaxSpeed(Vector2 input, bool isSprint)
     {
         if (isSprint && Sprintable)
         {

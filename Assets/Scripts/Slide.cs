@@ -3,16 +3,18 @@
 public class Slide : ActionComponent
 {
     private SlideConfiguration _configuration;
+    private Jump _jump;
+    private Crouch _crouch;
+    private RaycastHit hit;
+    
     private float m_timer;
     private bool m_sliding;
     private Vector3 m_accumulatedVelocity;
-    private Jump _jump;
-    private Crouch _crouch;
     private bool m_jumping;
     private bool m_jumpAttached;
     private bool m_croughAttached;
     private float m_tempY;
-    private RaycastHit hit;
+
     public Slide(SlideConfiguration configuration, Jump jump, Crouch crouch)
     {
         order = 2;
@@ -28,16 +30,6 @@ public class Slide : ActionComponent
         {
             _crouch = crouch;
             m_croughAttached = true;
-        }
-    }
-
-    private void JumpOnActionPerformed()
-    {
-        if (m_sliding)
-        {
-            _movement._horizontalMovement.ProvideMaxSpeed(_movement.GetHorizontalSpeed());
-            m_jumping = true;
-            Cancel();
         }
     }
 
@@ -118,6 +110,16 @@ public class Slide : ActionComponent
         }
         
         ClampHorizontalSpeed();
+    }
+    
+    private void JumpOnActionPerformed()
+    {
+        if (m_sliding)
+        {
+            _movement._horizontalMovement.ProvideMaxSpeed(_movement.GetHorizontalSpeed());
+            m_jumping = true;
+            Cancel();
+        }
     }
     
     private void ClampHorizontalSpeed()

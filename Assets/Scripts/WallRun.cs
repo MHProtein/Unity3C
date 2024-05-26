@@ -9,14 +9,16 @@ public class WallRun : ActionComponent
     
     private WallRunConfiguration _configuration;
     private Jump _jump;
-    private RaycastHit m_leftHit;
-    private RaycastHit m_rightHit;
-    private RaycastHit m_runningHit;
+    private CameraControl _cameraControl;
+    private RaycastHit _leftHit;
+    private RaycastHit _rightHit;
+    private RaycastHit _runningHit;
+    
     private bool m_snap;
     private float m_timer = 0.0f;
     private bool m_runable = true;
     private float m_originCameraSlopeAngle;
-    private CameraControl _cameraControl;
+
     public WallRun(WallRunConfiguration configuration, Jump jump, CameraControl cameraControl)
     {
         order = 2;
@@ -28,25 +30,6 @@ public class WallRun : ActionComponent
             _jump.speedBonus = configuration.jumpSpeedBonus;
             _jump.onActionPerformed += OnJumpPerformed;
             _jump.onActionCanceled += OnJumpCanceled;
-        }
-    }
-
-    private void OnJumpCanceled()
-    {
-        if(!isWallRunning)
-            tick = false;
-    }
-    
-    private void OnJumpPerformed()
-    {
-        if (!isWallRunning)
-        {
-            tick = true; 
-        }
-        else
-        {
-            m_snap = false;
-            ResetState();
         }
     }
 
@@ -64,6 +47,19 @@ public class WallRun : ActionComponent
         _movement.ChangePlayerState(PlayerState.WALLRUN);
         m_snap = true;
         base.Perform();
+    }
+    
+    public override void FixedUpdate()
+    {
+        if (!m_runable)
+            CoolDown();
+        else if (!isWallRunning)
+            WallDetection();
+        else
+        {
+            RunningRayCast(isLeft ? -_movement.Transform.right : _movement.Transform.right);
+            SnapToWall();
+        }
     }
 
     public override void Cancel()
@@ -84,6 +80,25 @@ public class WallRun : ActionComponent
         m_snap = false;
         _cameraControl.RotateCamera(new Vector3(0.0f, 0.0f, 
             isLeft ? _configuration.cameraSlopeAngle : -_configuration.cameraSlopeAngle));
+    }
+    
+    private void OnJumpCanceled()
+    {
+        if(!isWallRunning)
+            tick = false;
+    }
+    
+    private void OnJumpPerformed()
+    {
+        if (!isWallRunning)
+        {
+            tick = true; 
+        }
+        else
+        {
+            m_snap = false;
+            ResetState();
+        }
     }
 
     private void WallDetection()
@@ -120,7 +135,7 @@ public class WallRun : ActionComponent
     {
         if (Physics.Raycast(
                 _movement.Transform.position + new Vector3(0.0f, _configuration.rayCastHeight, 0.0f),
-                direction, out m_runningHit,
+                direction, out _runningHit,
                 _configuration.rayCastDistance, _configuration.layerMask))
         {
             return;
@@ -133,21 +148,8 @@ public class WallRun : ActionComponent
         if (m_snap)
         {
             float tempy = _movement.velocity.y;
-            _movement.velocity = Vector3.ProjectOnPlane(_movement.velocity, m_runningHit.normal);
+            _movement.velocity = Vector3.ProjectOnPlane(_movement.velocity, _runningHit.normal);
             _movement.velocity.y = tempy;
-        }
-    }
-    
-    public override void FixedUpdate()
-    {
-        if (!m_runable)
-            CoolDown();
-        else if (!isWallRunning)
-            WallDetection();
-        else
-        {
-            RunningRayCast(isLeft ? -_movement.Transform.right : _movement.Transform.right);
-            SnapToWall();
         }
     }
 }

@@ -6,6 +6,7 @@ public class PlayerInputHandler
     public Vector2 movementInput;
     public Vector2 cameraInput;
     public bool sprint;
+    
     private Player _player;
     private PlayerInputActions _playerInputActions;
 

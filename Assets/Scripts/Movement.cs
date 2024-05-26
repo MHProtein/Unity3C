@@ -10,10 +10,11 @@ public class Movement
     public HorizontalMovement _horizontalMovement;
     public VerticalMovement _verticalMovement;
     
+    private List<ActionComponent> components;
+    
     private float m_maxSpeed;
     private float m_turnSmoothVelocity;
-
-    private List<ActionComponent> components;
+    
     public Transform Camera { private set; get; }
     public Transform Transform { private set; get; }
     public Player Player { private set; get; }

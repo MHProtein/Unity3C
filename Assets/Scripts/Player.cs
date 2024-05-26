@@ -50,12 +50,12 @@ public class Player : MonoBehaviour
     [SerializeField] private TMP_Text speedText;
     [SerializeField] private Image staminaBar;
     
-    public PlayerState State { get; private set; }
-    
     private int CROUCH = Animator.StringToHash("Crouch");
     private int SLIDE = Animator.StringToHash("Slide");
     private int WALLRUN_LEFT = Animator.StringToHash("WallRunLeft");
     private int WALLRUN_RIGHT = Animator.StringToHash("WallRunRight");
+    
+    public PlayerState State { get; private set; }
     
     private void Awake()
     {
