@@ -29,13 +29,13 @@ namespace Unity3C.StateMachine
             {
                 _player.animator.SetBool(WALLRUN_LEFT, true);
                 _player.CameraControl.ChangeOffsetX(1.0f);
-                _player.CameraControl.RotateCamera(new Vector3(0.0f, 0.0f, -cameraSlopeAngle));
+                _player.CameraControl.RotateCameraZ(-cameraSlopeAngle);
             }
             else
             {
                 _player.animator.SetBool(WALLRUN_RIGHT, true);
                 _player.CameraControl.ChangeOffsetX(-1.0f);
-                _player.CameraControl.RotateCamera(new Vector3(0.0f, 0.0f, cameraSlopeAngle));
+                _player.CameraControl.RotateCameraZ(cameraSlopeAngle);
             }
         }
 
@@ -49,8 +49,7 @@ namespace Unity3C.StateMachine
             else
                 _player.animator.SetBool(WALLRUN_RIGHT, false);
             
-            _player.CameraControl.RotateCamera(new Vector3(0.0f, 0.0f, 
-                isLeft ? cameraSlopeAngle : -cameraSlopeAngle));
+            _player.CameraControl.RotateCameraZ(isLeft ? cameraSlopeAngle : -cameraSlopeAngle);
             _player.CameraControl.ChangeOffsetX(1.0f);
         }
     }

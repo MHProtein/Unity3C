@@ -148,14 +148,14 @@ namespace Unity3C.CameraControl
             }
         }
     
-        public void RotateCamera(Vector3 angle)
+        public void RotateCameraZ(float angle)
         {
             currentAngle = 0.0f;
-            targetAngle = angle.z;
+            targetAngle = angle;
             isRotating = true;
         }
 
-        private void RotateCamera()
+        private void RotateCameraZ()
         {
             currentAngle = Mathf.MoveTowards(currentAngle, targetAngle, 
                 cameraRotationSpeedZ * Time.fixedDeltaTime);
@@ -196,7 +196,7 @@ namespace Unity3C.CameraControl
             
             if (isRotating)
             {
-                RotateCamera();
+                RotateCameraZ();
                 _transform.localEulerAngles = new Vector3(m_targetPitch, camera.transform.localEulerAngles.y,
                     _transform.localEulerAngles.z + currentAngle);
             }
@@ -222,7 +222,6 @@ namespace Unity3C.CameraControl
             m_lookPosition = m_focusPoint - m_loopDirection * distance + _transform.right * positionOffset.x;
 
             CollisionDetection();
-            
             
             _transform.SetPositionAndRotation(m_lookPosition, m_lookRotation);
         }
