@@ -9,11 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a2e41bc195b0477da8a1875d45e9c282, type: 3}
+  m_Script: {fileID: 11500000, guid: 601f04c25c804022b9b84026cd8e090b, type: 3}
   m_Name: HorizontalMovement
   m_EditorClassIdentifier: 
+  actionName: HorizontalMovement
+  tick: 1
+  order: 0
   maxWalkingVelocity: 3
   maxRunningVelocity: 6
   maxSprintSpeed: 10
-  turnSmoothTime: 2
   runThreshold: 0.25
+  isRunning: 0

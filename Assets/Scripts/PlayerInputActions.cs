@@ -89,6 +89,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": ""Hold(duration=0.1)"",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""CameraChange"",
+                    ""type"": ""Button"",
+                    ""id"": ""c4245692-0c54-41f8-bfcf-de5f6fa0f18a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -421,6 +430,17 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""Slide"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4cdd4958-87d3-4af9-994b-8f7fba847a06"",
+                    ""path"": ""<Keyboard>/v"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""CameraChange"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -459,6 +479,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_Crouch = m_Player.FindAction("Crouch", throwIfNotFound: true);
         m_Player_Glide = m_Player.FindAction("Glide", throwIfNotFound: true);
         m_Player_Slide = m_Player.FindAction("Slide", throwIfNotFound: true);
+        m_Player_CameraChange = m_Player.FindAction("CameraChange", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -527,6 +548,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Crouch;
     private readonly InputAction m_Player_Glide;
     private readonly InputAction m_Player_Slide;
+    private readonly InputAction m_Player_CameraChange;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -538,6 +560,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public InputAction @Crouch => m_Wrapper.m_Player_Crouch;
         public InputAction @Glide => m_Wrapper.m_Player_Glide;
         public InputAction @Slide => m_Wrapper.m_Player_Slide;
+        public InputAction @CameraChange => m_Wrapper.m_Player_CameraChange;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -568,6 +591,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Slide.started += instance.OnSlide;
             @Slide.performed += instance.OnSlide;
             @Slide.canceled += instance.OnSlide;
+            @CameraChange.started += instance.OnCameraChange;
+            @CameraChange.performed += instance.OnCameraChange;
+            @CameraChange.canceled += instance.OnCameraChange;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -593,6 +619,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Slide.started -= instance.OnSlide;
             @Slide.performed -= instance.OnSlide;
             @Slide.canceled -= instance.OnSlide;
+            @CameraChange.started -= instance.OnCameraChange;
+            @CameraChange.performed -= instance.OnCameraChange;
+            @CameraChange.canceled -= instance.OnCameraChange;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -637,5 +666,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnCrouch(InputAction.CallbackContext context);
         void OnGlide(InputAction.CallbackContext context);
         void OnSlide(InputAction.CallbackContext context);
+        void OnCameraChange(InputAction.CallbackContext context);
     }
 }

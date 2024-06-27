@@ -9,7 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f58d15a3f5145f9bf66acc8516b15ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 6e0ea77dce2843eaae960af710488044, type: 3}
   m_Name: Glide
   m_EditorClassIdentifier: 
+  actionName: Glide
+  tick: 0
+  order: 0
   modifiedYVelocity: -1.5

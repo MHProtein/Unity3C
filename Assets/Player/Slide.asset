@@ -9,11 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 60a6ffa6d606400591f4af4858863267, type: 3}
+  m_Script: {fileID: 11500000, guid: 42659c02f1f64883b5b2bc5f8c3314ac, type: 3}
   m_Name: Slide
   m_EditorClassIdentifier: 
+  actionName: Slide
+  tick: 0
+  order: 2
   maxSlideTime: 0.8
-  slideForce: 5
+  slideForce: 4
+  maxSlideSpeed: 14
   layerMask:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 311

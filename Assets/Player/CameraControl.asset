@@ -14,4 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TopClamp: 90
   BottomClamp: -90
-  RotationSpeed: 1
+  RotationSpeed: 22
+  positionOffset: {x: 1, y: 1, z: -3}
+  rotationOffset: {x: 0, y: 0, z: 0}
+  yMinAngle: -30.7
+  yMaxAngle: 50
+  distance: 5
+  damping: 25
+  xSensitivity: 0.5
+  ySensitivity: 0.5
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 257

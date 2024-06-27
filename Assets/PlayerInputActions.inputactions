@@ -67,6 +67,15 @@
                     "processors": "",
                     "interactions": "Hold(duration=0.1)",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "CameraChange",
+                    "type": "Button",
+                    "id": "c4245692-0c54-41f8-bfcf-de5f6fa0f18a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -397,6 +406,17 @@
                     "processors": "",
                     "groups": "Keyboard",
                     "action": "Slide",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4cdd4958-87d3-4af9-994b-8f7fba847a06",
+                    "path": "<Keyboard>/v",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "CameraChange",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

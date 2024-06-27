@@ -9,10 +9,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6456b67abe924bed968615b653940d20, type: 3}
+  m_Script: {fileID: 11500000, guid: d38bca0f7a294605b1b05ac63790bee2, type: 3}
   m_Name: Jump
   m_EditorClassIdentifier: 
+  actionName: Jump
+  tick: 0
+  order: 1
   jumpSpeed: 12
   enableDoubleJump: 1
-  doubleJumpSpeedThreshold: -2
+  doubleJumpSpeedThreshold: -1
   doubleJumpSpeed: 10
+  wallJump: 0
+  doubleJumpable: 0
+  speedBonus: 4
+  isJumping: 0

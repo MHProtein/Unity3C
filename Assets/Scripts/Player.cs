@@ -1,212 +1,106 @@
-using System;
+using System.Collections.Generic;
 using TMPro;
+using Unity3C.EventCenter;
+using Unity3C.Input;
+using Unity3C.Movement;
+using Unity3C.StateMachine;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-public enum PlayerState
+
+namespace Unity3C
 {
-    IDLE,
-    WALK,
-    RUN,
-    SPRINT,
-    JUMP,
-    FALL,
-    CROUCH,
-    GLIDE,
-    SLIDE,
-    WALLRUN
+
+    [RequireComponent(typeof(CharacterController))]
+    public class Player : MonoBehaviour
+    {
+        public AttributesConfiguration attributesConfiguration;
+
+        public float sprintStaminaCost = 0.5f;
+
+        public PlayerStateMachine stateMachine;
+        [HideInInspector] public MovementManager movementManager;
+        
+        [HideInInspector] public PlayerAttributes attributes;
+        
+        public CharacterController controller;
+        public Animator animator;
+        public PlayerInputHandler _inputHandler;
+        public List<ActionComponent> ActionComponents;
+        [FormerlySerializedAs("States")] public List<State> preRegisterStates;
+        [FormerlySerializedAs("initState")] public State defaultState;
+        
+        [SerializeField] public TMP_Text stateText;
+        [SerializeField] public TMP_Text speedText;
+        [SerializeField] public Image staminaBar;
+        [SerializeField] private Collider _collider;
+        [SerializeField] public CameraControl.CameraControl CameraControl;
+        
+        private void Awake()
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            controller = GetComponent<CharacterController>();
+            animator = GetComponent<Animator>();
+
+            stateMachine = new PlayerStateMachine(this);
+            attributes = new PlayerAttributes(attributesConfiguration);
+            _inputHandler = new PlayerInputHandler();
+            movementManager = new MovementManager(this);
+            
+            RootEventCenter.Instance.Register("SwitchState", OnSwitchState);
+            
+            stateText.text = "State : " + stateMachine.DefaultState;
+        }
+
+        private void OnSwitchState(Dictionary<string, object> messageDict)
+        {
+            StateMachine.State state = (State)messageDict["NewState"];
+            stateText.text = "State : " + state.StateName;
+        }
+
+        public float ApplyStaminaChange(float delta)
+        {
+            return attributes.ApplyStaminaChange(delta);
+        }
+        
+        public State GetState()
+        {
+            return stateMachine.CurrentState;
+        }
+        
+        private void FixedUpdate()
+        {
+            movementManager.FixedUpdate();
+        }
+
+        private void Update()
+        {
+            //apply stamina change
+
+            _inputHandler.Update();
+            attributes.Update();
+            speedText.text = "HorizontalSpeed : " + movementManager.GetHorizontalSpeed().ToString("0.0")
+                                                  + "\nVerticalSpeed : " + movementManager.velocity.y.ToString("0.0");
+            staminaBar.fillAmount = attributes.Stamina / attributesConfiguration.maxStamina;
+            
+        }
+
+        private void LateUpdate()
+        {
+        }
+        
+        private void OnEnable()
+        {
+            _inputHandler.OnEnable();
+            stateMachine.OnEnable();
+        }
+        
+        private void OnDisable()
+        {
+            _inputHandler.OnDisable();
+            stateMachine.OnDisable();
+        }
+    }
 }
 
-[RequireComponent(typeof(CharacterController))]
-public class Player : MonoBehaviour
-{
-    public HorizontalMovementConfiguration hConfiguration;
-    public VerticalMovementConfiguration vConfiguration;
-    public JumpConfiguration jumpConfiguration;
-    public CrouchConfiguration crouchConfiguration;
-    public GlideConfiguration glideConfiguration;
-    public SlideConfiguration slideConfiguration;
-    public WallRunConfiguration wallRunConfiguration;
-    public AttributesConfiguration attributesConfiguration;
-    public CameraControlConfiguration cameraControlConfiguration;
-
-    public float sprintStaminaCost = 0.5f;
-    
-    [HideInInspector] public Movement movement;
-    [HideInInspector] public Jump jump;
-    [HideInInspector] public Crouch crouch;
-    [HideInInspector] public Glide glide;
-    [HideInInspector] public Slide slide;
-    [HideInInspector] public WallRun wallRun;
-    [HideInInspector] public CameraControl cameraControl;
-    [HideInInspector] public PlayerAttributes attributes;
-    
-    private CharacterController _controller;
-    private Animator _animator;
-    private PlayerInputHandler _inputHandler;
-    
-    [SerializeField] private Transform camera;
-    [SerializeField] private TMP_Text stateText;
-    [SerializeField] private TMP_Text speedText;
-    [SerializeField] private Image staminaBar;
-    
-    private int CROUCH = Animator.StringToHash("Crouch");
-    private int SLIDE = Animator.StringToHash("Slide");
-    private int WALLRUN_LEFT = Animator.StringToHash("WallRunLeft");
-    private int WALLRUN_RIGHT = Animator.StringToHash("WallRunRight");
-    
-    public PlayerState State { get; private set; }
-    
-    private void Awake()
-    {
-        Cursor.lockState = CursorLockMode.Locked;
-        
-        _controller = GetComponent<CharacterController>();
-        _animator = GetComponent<Animator>();
-
-        attributes = new PlayerAttributes(attributesConfiguration);
-        _inputHandler = new PlayerInputHandler(this);
-        movement = new Movement(this, transform, _controller, 
-            camera, hConfiguration, vConfiguration);
-        cameraControl = new CameraControl(cameraControlConfiguration, movement, camera);
-        jump = new Jump(jumpConfiguration);
-        movement.AddComponent(jump);
-        crouch = new Crouch(crouchConfiguration);
-        movement.AddComponent(crouch);
-        glide = new Glide(glideConfiguration);
-        movement.AddComponent(glide);
-        slide = new Slide(slideConfiguration, jump, crouch);
-        movement.AddComponent(slide);
-        wallRun = new WallRun(wallRunConfiguration, jump, cameraControl);
-        movement.AddComponent(wallRun);
-        stateText.text = "State : " + State;
-    }
-
-    public float ApplyStaminaChange(float delta)
-    {
-        return attributes.ApplyStaminaChange(delta);
-    }
-    
-    public void ChangePlayerState(PlayerState newState)
-    {
-        if (State == newState)
-            return;
-        
-        ExitState();
-        EnterState(newState);
-        
-        State = newState;
-        stateText.text = "State : " + State;
-    }
-
-    private void ExitState()
-    {
-        switch (State)
-        {
-            case PlayerState.SPRINT:
-                attributes.StaminaRechargable = true;
-                break;
-            case PlayerState.CROUCH:
-                _animator.SetBool(CROUCH, false);
-                break;
-            case PlayerState.JUMP:
-                attributes.StaminaRechargable = true;
-                break;
-            case PlayerState.GLIDE:
-                attributes.StaminaRechargable = true;
-                break;
-            case PlayerState.SLIDE:
-            {
-                attributes.StaminaRechargable = true;
-                _animator.SetBool(SLIDE, false);
-                break;
-            }
-            case PlayerState.WALLRUN:
-            {
-                attributes.StaminaRechargable = true;
-                if(wallRun.isLeft)
-                    _animator.SetBool(WALLRUN_LEFT, false);
-                else
-                    _animator.SetBool(WALLRUN_RIGHT, false);
-                break;
-            }
-        }
-    }
-
-    private void EnterState(PlayerState newState)
-    {
-        switch (newState)
-        {
-            case PlayerState.SPRINT:
-                attributes.StaminaRechargable = false;
-                break;
-            case PlayerState.CROUCH:
-                _animator.SetBool(CROUCH, true);
-                break;
-            case PlayerState.JUMP:
-                attributes.StaminaRechargable = false;
-                break;
-            case PlayerState.GLIDE:
-                attributes.StaminaRechargable = false;
-                break;
-            case PlayerState.SLIDE:
-            {
-                attributes.StaminaRechargable = false;
-                _animator.SetBool(SLIDE, true);
-                break;
-            }
-            case PlayerState.WALLRUN:
-            {
-                attributes.StaminaRechargable = false;
-                if(wallRun.isLeft)
-                    _animator.SetBool(WALLRUN_LEFT, true);
-                else
-                    _animator.SetBool(WALLRUN_RIGHT, true);
-                break;
-            }
-        }
-    }
-
-    private void FixedUpdate()
-    {
-        movement.Update(_inputHandler.movementInput, _inputHandler.sprint);
-    }
-
-    private void Update()
-    {
-        //apply stamina change
-        if (State == PlayerState.SPRINT)
-        {
-            if (ApplyStaminaChange(-sprintStaminaCost * Time.deltaTime) <= 0.0f)
-                movement._horizontalMovement.Sprintable = false;
-            Debug.Log(attributes.Stamina);
-        }
-
-        if (!movement._horizontalMovement.Sprintable)
-        {
-            if(attributes.Stamina >= attributesConfiguration.maxStamina)
-                movement._horizontalMovement.Sprintable = true;
-        }
-        
-        _inputHandler.Update();
-        attributes.Update();
-        speedText.text = "HorizontalSpeed : " + movement.GetHorizontalSpeed()
-                                              + "\nVerticalSpeed : " + movement.velocity.y;
-        staminaBar.fillAmount = attributes.Stamina / attributesConfiguration.maxStamina;
-    }
-
-    private void LateUpdate()
-    {
-        cameraControl.LateUpdate(_inputHandler.cameraInput);
-    }
-    
-    private void OnEnable()
-    {
-        _inputHandler.OnEnable();
-    }
-    
-    private void OnDisable()
-    {
-        _inputHandler.OnDisable();
-    }
-}
