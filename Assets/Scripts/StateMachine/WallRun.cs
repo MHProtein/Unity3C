@@ -9,7 +9,7 @@ namespace Unity3C.StateMachine
     public class WallRun : State
     {
         [Range(0, 45)] public float cameraSlopeAngle;
-        
+        [Range(0, 5)] public float cameraOffset;     
         private bool isLeft;
 
         private int WALLRUN_LEFT = Animator.StringToHash("WallRunLeft");
@@ -28,13 +28,13 @@ namespace Unity3C.StateMachine
             if(isLeft)
             {
                 _player.animator.SetBool(WALLRUN_LEFT, true);
-                _player.CameraControl.ChangeOffsetX(1.0f);
+                _player.CameraControl.ChangeOffsetX(cameraOffset);
                 _player.CameraControl.RotateCameraZ(-cameraSlopeAngle);
             }
             else
             {
                 _player.animator.SetBool(WALLRUN_RIGHT, true);
-                _player.CameraControl.ChangeOffsetX(-1.0f);
+                _player.CameraControl.ChangeOffsetX(-cameraOffset);
                 _player.CameraControl.RotateCameraZ(cameraSlopeAngle);
             }
         }
@@ -50,7 +50,7 @@ namespace Unity3C.StateMachine
                 _player.animator.SetBool(WALLRUN_RIGHT, false);
             
             _player.CameraControl.RotateCameraZ(isLeft ? cameraSlopeAngle : -cameraSlopeAngle);
-            _player.CameraControl.ChangeOffsetX(1.0f);
+            _player.CameraControl.ChangeOffsetX(cameraOffset);
         }
     }
 }

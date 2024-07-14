@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using Unity3C.EventCenter;
@@ -36,12 +37,22 @@ namespace Unity3C
         [SerializeField] public Image staminaBar;
         [SerializeField] private Collider _collider;
         [SerializeField] public CameraControl.CameraControl CameraControl;
+
+        private int _isStrafingHash = Animator.StringToHash("IsStrafing");
+        private int _forwardStrafeHash = Animator.StringToHash("ForwardStrafe");
+        private int _strafeDirectionXHash = Animator.StringToHash("StrafeDirectionX");
+        private int _strafeDirectionZHash = Animator.StringToHash("StrafeDirectionZ");
+        private int _moveSpeedHash = Animator.StringToHash("MoveSpeed");
+
+        private const float ANIMATION_DAMP_TIME = 5.0f;
+        private float m_strafeDirectionX = 0.0f;
+        private float m_strafeDirectionZ = 0.0f;
         
         private void Awake()
         {
             Cursor.lockState = CursorLockMode.Locked;
             controller = GetComponent<CharacterController>();
-            animator = GetComponent<Animator>();
+            animator = GetComponentInChildren<Animator>();
 
             stateMachine = new PlayerStateMachine(this);
             attributes = new PlayerAttributes(attributesConfiguration);
@@ -51,6 +62,11 @@ namespace Unity3C
             RootEventCenter.Instance.Register("SwitchState", OnSwitchState);
             
             stateText.text = "State : " + stateMachine.DefaultState;
+        }
+
+        private void Start()
+        {
+            animator.SetFloat(_isStrafingHash, 1.0f);
         }
 
         private void OnSwitchState(Dictionary<string, object> messageDict)
@@ -76,14 +92,19 @@ namespace Unity3C
 
         private void Update()
         {
-            //apply stamina change
-
             _inputHandler.Update();
+   
+            float moveSpeed = movementManager.GetHorizontalSpeed();
             attributes.Update();
-            speedText.text = "HorizontalSpeed : " + movementManager.GetHorizontalSpeed().ToString("0.0")
+            speedText.text = "HorizontalSpeed : " + moveSpeed.ToString("0.0")
                                                   + "\nVerticalSpeed : " + movementManager.velocity.y.ToString("0.0");
             staminaBar.fillAmount = attributes.Stamina / attributesConfiguration.maxStamina;
             
+            //update animator
+            animator.SetFloat(_strafeDirectionXHash, _inputHandler.MovementInput.x);
+            animator.SetFloat(_strafeDirectionZHash, _inputHandler.MovementInput.y);
+            animator.SetFloat(_moveSpeedHash, moveSpeed);
+            animator.SetFloat(_forwardStrafeHash, _inputHandler.MovementInput.y);
         }
 
         private void LateUpdate()

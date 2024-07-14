@@ -38,7 +38,8 @@ namespace Unity3C.CameraControl
         [Header("Third Person")]
         [SerializeField] private Camera _tpCamera;
      
-        public Vector3 positionOffset = Vector3.up;
+        public Vector3 positionOffset = Vector3.up; 
+        public LayerMask layerMask;
         [Range(-180, 180)] public float pitchMinAngle = -120.0f;
         [Range(-180, 180)] public float pitchMaxAngle = 90.0f;
         [Range(0, 1000)]   public float distance = 3.0f; 
@@ -46,9 +47,8 @@ namespace Unity3C.CameraControl
         [Range(0, 1)]      public float focusCentering = 0.5f;
         [Range(0, 360)]    public float tpRotationSpeed = 90.0f;
         [Range(0, 20)]     public float alignDelay = 5.0f;
-        [Range(0, 5)]     public float offsetChangeSmoothTime = 0.2f;
-        [Range(0, 50)]     public float offsetChangeMaxSpeed = 5.0f;
-        public LayerMask layerMask;
+        [Range(0, 5)]      public float offsetChangeSmoothTime = 0.2f;
+        [Range(0, 50)]     public float offsetChangeMaxSpeed = 20.0f;
         
         private float m_rotationVelocity;
         private float m_targetPitch; 
@@ -100,7 +100,6 @@ namespace Unity3C.CameraControl
 
         public void ChangeView()
         {
-
             UnityEngine.Input.GetAxis("Horizontal");
             
             if (!_player.GetState().ViewChangable)
@@ -142,6 +141,7 @@ namespace Unity3C.CameraControl
 
             positionOffset.x = Mathf.SmoothDamp(positionOffset.x, targetOffset,
                 ref offsetChangingVelocity, offsetChangeSmoothTime, offsetChangeMaxSpeed);
+            
             if (Mathf.Abs(positionOffset.x - targetOffset) <= m_threshold)
             {
                 isOffsetChanging = false;
